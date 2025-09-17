@@ -113,7 +113,11 @@ export const submitFeedback = async (feedbackData) => {
       // Check if the request was successful
       if (!fetchResponse.ok) {
         const errorText = await fetchResponse.text();
-        console.error("Server responded with error:", fetchResponse.status, errorText);
+        console.error(
+          "Server responded with error:",
+          fetchResponse.status,
+          errorText
+        );
         throw new Error(`Server error: ${fetchResponse.status}`);
       }
 
@@ -135,32 +139,6 @@ export const submitFeedback = async (feedbackData) => {
     }
   } catch (error) {
     console.error("API Error:", error);
-    throw error;
-  }
-};
-
-export default api;
-        }
-
-        response = { data: await formResponse.json() };
-      } catch (formError) {
-        console.error("All submission methods failed:", formError);
-        throw formError;
-      }
-    }
-
-    console.log("Feedback submission successful:", response.data);
-    return response.data;
-  } catch (error) {
-    console.error("API Error:", error);
-
-    // Show more user-friendly error on mobile
-    if (isMobile) {
-      alert(
-        "Error submitting feedback. Please check your internet connection and try again."
-      );
-    }
-
     throw error;
   }
 };
