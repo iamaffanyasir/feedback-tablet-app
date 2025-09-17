@@ -1,18 +1,17 @@
 import axios from "axios";
 
-// Use the environment variable with direct fallback to HTTPS
-const API_BASE_URL =
-  process.env.REACT_APP_API_URL || "https://128.199.23.8/api";
+// Make sure we're using HTTPS without the port in the URL
+const API_BASE_URL = "https://128.199.23.8/api";
 
 console.log("Using API URL:", API_BASE_URL);
 
-// Create axios instance with timeout and retry logic
+// Create axios instance with better error handling
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
-  timeout: 10000, // 10 second timeout
+  timeout: 15000, // Increased timeout to 15 seconds
 });
 
 // Add response interceptor for better error handling
@@ -38,6 +37,7 @@ export const submitFeedback = async (feedbackData) => {
     console.log("Feedback data:", feedbackData);
 
     const response = await api.post("/feedback", feedbackData);
+    console.log("Feedback submission successful:", response.data);
     return response.data;
   } catch (error) {
     console.error("API Error:", error);

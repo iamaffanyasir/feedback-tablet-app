@@ -1,35 +1,27 @@
 import { io } from "socket.io-client";
 
-// Again, use the direct HTTPS URL to ensure it works
+// Use HTTPS without the port
 const SOCKET_URL = "https://128.199.23.8";
 
-const socket = io(SOCKET_URL, {
-  transports: ["websocket", "polling"],
-  reconnectionAttempts: 5,
-  reconnectionDelay: 1000,
-});
+console.log("Using Socket URL:", SOCKET_URL);
 
 class SocketService {
   constructor() {
-    this.socket = socket;
-    this.connect();
-    // To prevent duplicate emissions
-    this.emittedFeedbacks = new Set();
-  }
-
-  connect() {
-    this.socket.on("connect", () => {
-      console.log("Connected to server:", this.socket.id);
+    this.socket = io(SOCKET_URL, {
+      transports: ["websocket", "polling"],
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
     });
 
-    this.socket.on("disconnect", () => {
-      console.log("Disconnected from server");
-      // Clear the set on disconnect to prevent memory leaks
-      this.emittedFeedbacks.clear();
+    this.emittedFeedbacks = new Set();
+
+    // Add connection event handlers for debugging
+    this.socket.on("connect", () => {
+      console.log("Socket connected successfully");
     });
 
     this.socket.on("connect_error", (error) => {
-      console.error("Connection error:", error);
+      console.error("Socket connection error:", error);
     });
   }
 
