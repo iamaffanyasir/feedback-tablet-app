@@ -1,13 +1,13 @@
-import React, { useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import FeedbackForm from './components/FeedbackForm';
-import VideoBackground from './components/VideoBackground';
-import SwipePrompt from './components/SwipePrompt';
-import { submitFeedback } from './services/api';
-import { emitFeedback } from './services/socket';
-import './App.css';
+import React, { useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import FeedbackForm from "./components/FeedbackForm";
+import VideoBackground from "./components/VideoBackground";
+import SwipePrompt from "./components/SwipePrompt";
+import { submitFeedback } from "./services/api";
+import { emitFeedback } from "./services/socket";
+import "./App.css";
 
-const PAPER_COLORS = ['blue', 'red', 'green', 'yellow', 'purple'];
+const PAPER_COLORS = ["blue", "red", "green", "yellow", "purple"];
 
 function App() {
   const [currentColorIndex, setCurrentColorIndex] = useState(0);
@@ -19,12 +19,16 @@ function App() {
 
   const currentColor = PAPER_COLORS[currentColorIndex];
 
+  // Add this near the top of your component
+  console.log("API URL:", process.env.REACT_APP_API_URL);
+  console.log("SOCKET URL:", process.env.REACT_APP_SOCKET_URL);
+
   const handleFormSubmit = async (feedbackData) => {
     try {
       // Add color theme to feedback data
       const feedbackWithColor = {
         ...feedbackData,
-        colorTheme: currentColor
+        colorTheme: currentColor,
       };
 
       // Store feedback for socket emission
@@ -42,15 +46,15 @@ function App() {
         videoRef.current.play();
       }
     } catch (error) {
-      console.error('Error submitting feedback:', error);
-      alert('Error submitting feedback. Please try again.');
+      console.error("Error submitting feedback:", error);
+      alert("Error submitting feedback. Please try again.");
     }
   };
 
   const handleVideoEnd = () => {
     setIsVideoPlaying(false);
     setShowSwipePrompt(true);
-    
+
     // Keep the video at the last frame (the paper ball)
     if (videoRef.current) {
       videoRef.current.pause();
@@ -69,10 +73,10 @@ function App() {
     setShowSwipePrompt(false);
     setShowForm(true);
     setCurrentFeedback(null);
-    
+
     // Switch to next color
     setCurrentColorIndex((prev) => (prev + 1) % PAPER_COLORS.length);
-    
+
     // Reset video to beginning for next user
     if (videoRef.current) {
       videoRef.current.currentTime = 0;
@@ -87,20 +91,20 @@ function App() {
         isPlaying={isVideoPlaying}
         onVideoEnd={handleVideoEnd}
       />
-      
+
       <AnimatePresence>
         {showForm && (
           <motion.div
             className="form-overlay"
             initial={{ opacity: 1, zIndex: 10 }}
             animate={{ opacity: 1, zIndex: 10 }}
-            exit={{ 
-              opacity: 0, 
+            exit={{
+              opacity: 0,
               zIndex: -5,
-              transition: { duration: 0.5 }
+              transition: { duration: 0.5 },
             }}
           >
-            <FeedbackForm 
+            <FeedbackForm
               onSubmit={handleFormSubmit}
               paperColor={currentColor}
             />
@@ -109,9 +113,7 @@ function App() {
       </AnimatePresence>
 
       <AnimatePresence>
-        {showSwipePrompt && (
-          <SwipePrompt onSwipeUp={handleSwipeUp} />
-        )}
+        {showSwipePrompt && <SwipePrompt onSwipeUp={handleSwipeUp} />}
       </AnimatePresence>
     </div>
   );

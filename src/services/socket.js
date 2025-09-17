@@ -1,23 +1,23 @@
 import { io } from "socket.io-client";
 
-// Make sure this is using the HTTPS URL
-const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || "https://128.199.23.8";
+// Again, use the direct HTTPS URL to ensure it works
+const SOCKET_URL = "https://128.199.23.8";
+
+const socket = io(SOCKET_URL, {
+  transports: ["websocket", "polling"],
+  reconnectionAttempts: 5,
+  reconnectionDelay: 1000,
+});
 
 class SocketService {
   constructor() {
-    this.socket = null;
+    this.socket = socket;
     this.connect();
     // To prevent duplicate emissions
     this.emittedFeedbacks = new Set();
   }
 
   connect() {
-    this.socket = io(SOCKET_URL, {
-      transports: ["websocket", "polling"],
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-    });
-
     this.socket.on("connect", () => {
       console.log("Connected to server:", this.socket.id);
     });

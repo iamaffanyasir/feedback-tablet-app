@@ -1,8 +1,8 @@
 import axios from "axios";
 
-// You're still using the HTTP version - we need to ensure it's using the HTTPS URL from env variables
-const API_BASE_URL =
-  process.env.REACT_APP_API_URL || "https://128.199.23.8/api";
+// The error shows you're still connecting to http://128.199.23.8:3001/api
+// Let's make sure the HTTPS URL is used directly, without relying on env variables that might not be loaded
+const API_BASE_URL = "https://128.199.23.8/api";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
