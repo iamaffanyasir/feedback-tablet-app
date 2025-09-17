@@ -3,12 +3,21 @@ import axios from "axios";
 // Use HTTPS without the port
 const API_BASE_URL = "https://128.199.23.8/api";
 
-console.log("Using API URL:", API_BASE_URL);
+// Fallback to HTTP for mobile devices to bypass certificate issues
+const isMobile =
+  /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(
+    navigator.userAgent.toLowerCase()
+  );
+
+// Use HTTP for mobile devices to avoid certificate issues
+const MOBILE_API_BASE_URL = "http://128.199.23.8/api";
+
+console.log("Using API URL:", isMobile ? MOBILE_API_BASE_URL : API_BASE_URL);
 console.log("Device Info:", navigator.userAgent);
 
 // Create axios instance with mobile-friendly settings
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: isMobile ? MOBILE_API_BASE_URL : API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
     // Add these headers to help with mobile compatibility
@@ -89,7 +98,8 @@ export const submitFeedback = async (feedbackData) => {
       },
     };
 
-    console.log("Submitting feedback to:", `${API_BASE_URL}/feedback`);
+    const endpoint = isMobile ? MOBILE_API_BASE_URL : API_BASE_URL;
+    console.log("Submitting feedback to:", `${endpoint}/feedback`);
 
     // Use fetch API as backup if axios fails
     let response;
@@ -98,8 +108,15 @@ export const submitFeedback = async (feedbackData) => {
     } catch (axiosError) {
       console.log("Axios failed, trying fetch API as backup");
 
+      // For mobile, try with HTTP explicitly as a workaround for certificate issues
+      const fetchUrl = isMobile
+        ? `http://128.199.23.8/api/feedback`
+        : `${API_BASE_URL}/feedback`;
+
+      console.log("Fetch fallback using URL:", fetchUrl);
+
       // Try with fetch API as a backup method
-      const fetchResponse = await fetch(`${API_BASE_URL}/feedback`, {
+      const fetchResponse = await fetch(fetchUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -121,11 +138,7 @@ export const submitFeedback = async (feedbackData) => {
     console.error("API Error:", error);
 
     // Show more user-friendly error on mobile
-    if (
-      /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(
-        navigator.userAgent.toLowerCase()
-      )
-    ) {
+    if (isMobile) {
       alert(
         "Error submitting feedback. Please check your internet connection and try again."
       );

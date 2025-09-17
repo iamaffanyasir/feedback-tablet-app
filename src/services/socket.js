@@ -1,7 +1,13 @@
 import { io } from "socket.io-client";
 
-// Use HTTPS without the port
-const SOCKET_URL = "https://128.199.23.8";
+// Check if on mobile device
+const isMobile =
+  /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(
+    navigator.userAgent.toLowerCase()
+  );
+
+// Use HTTP for mobile to avoid certificate issues
+const SOCKET_URL = isMobile ? "http://128.199.23.8" : "https://128.199.23.8";
 
 console.log("Using Socket URL:", SOCKET_URL);
 
