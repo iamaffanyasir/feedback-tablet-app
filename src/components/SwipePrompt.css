@@ -1,0 +1,182 @@
+.swipe-prompt-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 20;
+  /* background: rgba(0, 0, 0, 0.6); */
+  cursor: grab;
+}
+
+.swipe-prompt-container:active {
+  cursor: grabbing;
+}
+
+.throw-instruction {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+}
+
+.throw-instruction p {
+  font-size: 32px;
+  margin: 0;
+  color: white;
+  font-family: 'Arial', sans-serif;
+  letter-spacing: 2px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.swipe-arrow {
+  font-size: 80px;
+  color: #4A90E2;
+  text-shadow: 0 0 20px rgba(74, 144, 226, 0.5);
+  animation: arrowBounce 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 10px rgba(74, 144, 226, 0.3));
+}
+
+@keyframes arrowBounce {
+  0%, 100% {
+    transform: translateY(0px);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-10px);
+    opacity: 1;
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .throw-instruction p {
+    font-size: 24px;
+  }
+  
+  .swipe-arrow {
+    font-size: 60px;
+  }
+}
+  /* background-image: {
+    radial-gradient(circle at 25% 25%, rgba(0, 0, 0, 0.15) 1px, transparent 2px),
+    radial-gradient(circle at 75% 35%, rgba(0, 0, 0, 0.12) 2px, transparent 3px),
+    radial-gradient(circle at 45% 75%, rgba(0, 0, 0, 0.18) 1px, transparent 2px),
+    radial-gradient(circle at 85% 85%, rgba(0, 0, 0, 0.10) 3px, transparent 4px),
+    radial-gradient(circle at 15% 65%, rgba(0, 0, 0, 0.14) 1px, transparent 2px),
+    radial-gradient(circle at 65% 15%, rgba(0, 0, 0, 0.16) 2px, transparent 3px);
+  background-size: 30px 30px, 40px 40px, 25px 25px, 50px 50px, 35px 35px, 45px 45px;
+} */
+
+.paper-ball::before {
+  content: '';
+  position: absolute;
+  top: 20%;
+  left: 20%;
+  width: 40%;
+  height: 40%;
+  background: 
+    radial-gradient(ellipse at center, rgba(255, 255, 255, 0.6) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.paper-ball::after {
+  content: '';
+  position: absolute;
+  bottom: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150px;
+  height: 20px;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.3) 0%, transparent 70%);
+  border-radius: 50%;
+  filter: blur(10px);
+  animation: shadowLevitate 3s ease-in-out infinite;
+}
+
+@keyframes shadowLevitate {
+  0%, 100% {
+    transform: translateX(-50%) scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateX(-50%) scale(0.8);
+    opacity: 0.2;
+  }
+}
+
+.throw-instruction {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+}
+
+.throw-instruction p {
+  font-size: 32px;
+  margin: 0;
+  color: white;
+  font-family: 'Arial', sans-serif;
+  letter-spacing: 2px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.swipe-arrow {
+  font-size: 80px;
+  color: #4A90E2;
+  text-shadow: 0 0 20px rgba(74, 144, 226, 0.5);
+  animation: arrowBounce 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 10px rgba(74, 144, 226, 0.3));
+}
+
+@keyframes arrowBounce {
+  0%, 100% {
+    transform: translateY(0px);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-10px);
+    opacity: 1;
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .paper-ball {
+    width: 150px;
+    height: 150px;
+  }
+  
+  .throw-instruction p {
+    font-size: 24px;
+  }
+  
+  .swipe-arrow {
+    font-size: 60px;
+  }
+  
+  .swipe-content {
+    gap: 60px;
+  }
+}
+
+/* Enhanced drag interaction */
+.swipe-prompt-container[style*="transform"] .paper-ball {
+  animation: none;
+  transition: none;
+}
+
+.swipe-prompt-container[style*="transform"] .paper-ball::after {
+  animation: none;
+  opacity: 0.1;
+}

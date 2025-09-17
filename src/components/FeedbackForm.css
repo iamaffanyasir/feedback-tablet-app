@@ -1,0 +1,113 @@
+.feedback-form-container {
+  width: 600px;
+  height: 700px;
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  /* box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2); */
+}
+
+.paper-texture {
+  width: 100%;
+  height: 100%;
+  /* background: linear-gradient(145deg, #ffffff 0%, #f8f8f8 100%); */
+  position: relative;
+  padding: 40px;
+}
+.feedback-form {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.form-title {
+  font-size: 32px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin-bottom: 40px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+  margin-bottom: 30px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 18px;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 8px;
+}
+
+.form-input,
+.form-textarea {
+  width: 100%;
+  padding: 15px;
+  font-size: 16px;
+  border: 0px solid #ddd;
+  border-radius: 10px;
+  background: transparent;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: #2196f3;
+  box-shadow: 0 0 10px rgba(33, 150, 243, 0.2);
+  transform: translateY(-2px);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 120px;
+  max-height: 200px;
+}
+
+.submit-button {
+  width: 100%;
+  padding: 18px;
+  font-size: 20px;
+  font-weight: bold;
+  color: white;
+  background: linear-gradient(145deg, #2196f3, #1976d2);
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(33, 150, 243, 0.3);
+  margin-top: 20px;
+}
+
+.submit-button:hover {
+  background: linear-gradient(145deg, #1976d2, #1565c0);
+  box-shadow: 0 12px 25px rgba(33, 150, 243, 0.4);
+  transform: translateY(-2px);
+}
+
+.submit-button:active {
+  transform: translateY(0);
+  box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+}
+
+/* Paper texture overlay */
+.paper-texture::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(120, 119, 116, 0.3) 1px, transparent 1px),
+    radial-gradient(circle at 80% 50%, rgba(120, 119, 116, 0.3) 1px, transparent 1px),
+    radial-gradient(circle at 40% 20%, rgba(120, 119, 116, 0.3) 1px, transparent 1px);
+  background-size: 100px 100px, 100px 100px, 100px 100px;
+  opacity: 0.4;
+  pointer-events: none;
+}
