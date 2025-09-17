@@ -1,6 +1,7 @@
-import { io } from 'socket.io-client';
+import { io } from "socket.io-client";
 
-const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || 'http://192.168.1.9:3001';
+// Make sure this is using the HTTPS URL
+const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || "https://128.199.23.8";
 
 class SocketService {
   constructor() {
@@ -12,45 +13,48 @@ class SocketService {
 
   connect() {
     this.socket = io(SOCKET_URL, {
-      transports: ['websocket'],
-      autoConnect: true,
+      transports: ["websocket", "polling"],
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
     });
 
-    this.socket.on('connect', () => {
-      console.log('Connected to server:', this.socket.id);
+    this.socket.on("connect", () => {
+      console.log("Connected to server:", this.socket.id);
     });
 
-    this.socket.on('disconnect', () => {
-      console.log('Disconnected from server');
+    this.socket.on("disconnect", () => {
+      console.log("Disconnected from server");
       // Clear the set on disconnect to prevent memory leaks
       this.emittedFeedbacks.clear();
     });
 
-    this.socket.on('connect_error', (error) => {
-      console.error('Connection error:', error);
+    this.socket.on("connect_error", (error) => {
+      console.error("Connection error:", error);
     });
   }
 
   emitFeedback(feedbackData) {
     if (this.socket && this.socket.connected) {
       // Create a unique identifier for this feedback
-      const feedbackId = `${feedbackData.name}-${feedbackData.email}-${Date.now()}`;
-      
+      const feedbackId = `${feedbackData.name}-${
+        feedbackData.email
+      }-${Date.now()}`;
+
       // Check if we've already emitted this feedback
       if (!this.emittedFeedbacks.has(feedbackId)) {
         this.emittedFeedbacks.add(feedbackId);
-        this.socket.emit('newFeedback', feedbackData);
-        console.log('Feedback emitted:', feedbackData);
-        
+        this.socket.emit("newFeedback", feedbackData);
+        console.log("Feedback emitted:", feedbackData);
+
         // Clean up after a delay to prevent memory leaks
         setTimeout(() => {
           this.emittedFeedbacks.delete(feedbackId);
         }, 10000);
       } else {
-        console.log('Duplicate feedback emission prevented');
+        console.log("Duplicate feedback emission prevented");
       }
     } else {
-      console.error('Socket not connected');
+      console.error("Socket not connected");
     }
   }
 
