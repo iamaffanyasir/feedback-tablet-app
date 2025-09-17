@@ -6,7 +6,7 @@ const isMobile =
     navigator.userAgent.toLowerCase()
   );
 
-// For mobile devices, we need to use HTTPS anyway despite certificate issues
+// For all devices, use HTTPS
 const API_BASE_URL = "https://128.199.23.8/api";
 
 console.log("Using API URL:", API_BASE_URL);
@@ -97,49 +97,49 @@ export const submitFeedback = async (feedbackData) => {
 
     console.log("Submitting feedback to:", `${API_BASE_URL}/feedback`);
 
-    // Use fetch API as backup if axios fails
-    let response;
+    // Simplified approach - just use fetch API directly for all devices
+    // This bypasses axios and its certificate validation
     try {
-      // For mobile devices, add special handling to ignore certificate errors
-      if (isMobile) {
-        console.log("Using mobile-specific submission approach");
-        const fetchResponse = await fetch(`${API_BASE_URL}/feedback`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify(enhancedData),
-        });
+      // Make a direct JSON fetch request
+      const fetchResponse = await fetch(`${API_BASE_URL}/feedback`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(enhancedData),
+      });
 
-        if (!fetchResponse.ok) {
-          throw new Error(`Fetch failed with status ${fetchResponse.status}`);
-        }
-
-        response = { data: await fetchResponse.json() };
-      } else {
-        // For desktop, use axios as usual
-        response = await api.post("/feedback", enhancedData);
+      // Check if the request was successful
+      if (!fetchResponse.ok) {
+        const errorText = await fetchResponse.text();
+        console.error("Server responded with error:", fetchResponse.status, errorText);
+        throw new Error(`Server error: ${fetchResponse.status}`);
       }
-    } catch (axiosError) {
-      console.log(
-        "Primary submission method failed, trying alternative approach"
-      );
 
-      try {
-        // Try with a form submission approach as a last resort
-        const formData = new FormData();
-        formData.append("data", JSON.stringify(enhancedData));
+      // Parse the JSON response
+      const responseData = await fetchResponse.json();
+      console.log("Feedback submission successful:", responseData);
+      return responseData;
+    } catch (error) {
+      console.error("Submission failed:", error);
 
-        const formResponse = await fetch(`${API_BASE_URL}/feedback`, {
-          method: "POST",
-          body: formData,
-        });
+      // Show user-friendly error on mobile
+      if (isMobile) {
+        alert(
+          "Error submitting feedback. Please check your internet connection and try again."
+        );
+      }
 
-        if (!formResponse.ok) {
-          throw new Error(
-            `Form submission failed with status ${formResponse.status}`
-          );
+      throw error;
+    }
+  } catch (error) {
+    console.error("API Error:", error);
+    throw error;
+  }
+};
+
+export default api;
         }
 
         response = { data: await formResponse.json() };
