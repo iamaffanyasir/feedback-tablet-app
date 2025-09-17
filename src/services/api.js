@@ -1,23 +1,20 @@
 import axios from "axios";
 
-// Use HTTPS without the port
-const API_BASE_URL = "https://128.199.23.8/api";
-
-// Fallback to HTTP for mobile devices to bypass certificate issues
+// Check if on mobile device
 const isMobile =
   /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(
     navigator.userAgent.toLowerCase()
   );
 
-// Use HTTP for mobile devices to avoid certificate issues
-const MOBILE_API_BASE_URL = "http://128.199.23.8/api";
+// For mobile devices, we need to use HTTPS anyway despite certificate issues
+const API_BASE_URL = "https://128.199.23.8/api";
 
-console.log("Using API URL:", isMobile ? MOBILE_API_BASE_URL : API_BASE_URL);
+console.log("Using API URL:", API_BASE_URL);
 console.log("Device Info:", navigator.userAgent);
 
 // Create axios instance with mobile-friendly settings
 const api = axios.create({
-  baseURL: isMobile ? MOBILE_API_BASE_URL : API_BASE_URL,
+  baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
     // Add these headers to help with mobile compatibility
@@ -98,38 +95,58 @@ export const submitFeedback = async (feedbackData) => {
       },
     };
 
-    const endpoint = isMobile ? MOBILE_API_BASE_URL : API_BASE_URL;
-    console.log("Submitting feedback to:", `${endpoint}/feedback`);
+    console.log("Submitting feedback to:", `${API_BASE_URL}/feedback`);
 
     // Use fetch API as backup if axios fails
     let response;
     try {
-      response = await api.post("/feedback", enhancedData);
-    } catch (axiosError) {
-      console.log("Axios failed, trying fetch API as backup");
+      // For mobile devices, add special handling to ignore certificate errors
+      if (isMobile) {
+        console.log("Using mobile-specific submission approach");
+        const fetchResponse = await fetch(`${API_BASE_URL}/feedback`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify(enhancedData),
+        });
 
-      // For mobile, try with HTTP explicitly as a workaround for certificate issues
-      const fetchUrl = isMobile
-        ? `http://128.199.23.8/api/feedback`
-        : `${API_BASE_URL}/feedback`;
+        if (!fetchResponse.ok) {
+          throw new Error(`Fetch failed with status ${fetchResponse.status}`);
+        }
 
-      console.log("Fetch fallback using URL:", fetchUrl);
-
-      // Try with fetch API as a backup method
-      const fetchResponse = await fetch(fetchUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify(enhancedData),
-      });
-
-      if (!fetchResponse.ok) {
-        throw new Error(`Fetch failed with status ${fetchResponse.status}`);
+        response = { data: await fetchResponse.json() };
+      } else {
+        // For desktop, use axios as usual
+        response = await api.post("/feedback", enhancedData);
       }
+    } catch (axiosError) {
+      console.log(
+        "Primary submission method failed, trying alternative approach"
+      );
 
-      response = { data: await fetchResponse.json() };
+      try {
+        // Try with a form submission approach as a last resort
+        const formData = new FormData();
+        formData.append("data", JSON.stringify(enhancedData));
+
+        const formResponse = await fetch(`${API_BASE_URL}/feedback`, {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!formResponse.ok) {
+          throw new Error(
+            `Form submission failed with status ${formResponse.status}`
+          );
+        }
+
+        response = { data: await formResponse.json() };
+      } catch (formError) {
+        console.error("All submission methods failed:", formError);
+        throw formError;
+      }
     }
 
     console.log("Feedback submission successful:", response.data);

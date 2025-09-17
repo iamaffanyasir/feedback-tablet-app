@@ -6,19 +6,23 @@ const isMobile =
     navigator.userAgent.toLowerCase()
   );
 
-// Use HTTP for mobile to avoid certificate issues
-const SOCKET_URL = isMobile ? "http://128.199.23.8" : "https://128.199.23.8";
+// For mobile devices, we still need to use HTTPS despite certificate issues
+const SOCKET_URL = "https://128.199.23.8";
 
 console.log("Using Socket URL:", SOCKET_URL);
 
 class SocketService {
   constructor() {
-    this.socket = io(SOCKET_URL, {
+    // For mobile devices, add special options to help with certificate issues
+    const socketOptions = {
       transports: ["websocket", "polling"],
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
-    });
+      // For mobile devices, don't validate SSL certificates
+      rejectUnauthorized: !isMobile,
+    };
 
+    this.socket = io(SOCKET_URL, socketOptions);
     this.emittedFeedbacks = new Set();
 
     // Add connection event handlers for debugging
